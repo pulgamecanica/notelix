@@ -1,6 +1,5 @@
 import { useHistory } from "react-router-dom";
 import React, { useState } from "react";
-import axios from "axios";
 import { NotelixChromeStorageKey, NotelixDefaultServer } from "../consts";
 import { getMetaVersion } from "../../api/meta";
 

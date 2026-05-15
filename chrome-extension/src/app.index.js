@@ -1,10 +1,10 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import Search from "./app/components/Search";
 import "./app/app.less";
 import AnnotationsExplorer from "./app/components/AnnotationsExplorer";
 
-ReactDOM.render(
+createRoot(document.getElementById("root")).render(
   <div
     className="notelix-app-root"
     style={{ display: "flex", flexDirection: "column", height: "100vh" }}
@@ -15,6 +15,5 @@ ReactDOM.render(
     <div style={{ flexGrow: "1", overflowY: "auto" }}>
       <AnnotationsExplorer />
     </div>
-  </div>,
-  document.getElementById("root")
+  </div>
 );

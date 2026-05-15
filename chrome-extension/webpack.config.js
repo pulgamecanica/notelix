@@ -1,13 +1,13 @@
+const path = require("path");
+
 module.exports = {
   mode: "production",
-  devServer: {
-    inline: true,
-    port: 7777,
-  },
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
-  plugins: [],
+  output: {
+    path: path.resolve(__dirname, "dist"),
+  },
   module: {
     rules: [
       {
@@ -17,12 +17,8 @@ module.exports = {
       {
         test: /\.less$/,
         use: [
-          {
-            loader: "style-loader",
-          },
-          {
-            loader: "css-loader",
-          },
+          { loader: "style-loader" },
+          { loader: "css-loader" },
           {
             loader: "less-loader",
             options: {
@@ -34,36 +30,32 @@ module.exports = {
         ],
       },
       {
-        test: /\.js[x]?$/,
+        test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
           options: {
-            presets: ["@babel/preset-env", "@babel/preset-react"],
+            presets: [
+              ["@babel/preset-env", { targets: { chrome: "100" } }],
+              ["@babel/preset-react", { runtime: "automatic" }],
+            ],
             plugins: [["@babel/plugin-transform-runtime"]],
           },
         },
       },
       {
-        test: /\.ts[x]?$/,
+        test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: {
-          loader: "ts-loader",
-        },
+        use: { loader: "ts-loader" },
       },
       {
         test: /\.css$/,
-        loader: [
-          {
-            loader: "style-loader",
-          },
-          {
-            loader: "css-loader",
-          },
-        ],
+        use: [{ loader: "style-loader" }, { loader: "css-loader" }],
       },
-      { test: /\.(png|jpg|gif)$/, loader: "url?limit=12288" },
+      {
+        test: /\.(png|jpg|gif)$/,
+        type: "asset/inline",
+      },
     ],
   },
-  node: {},
 };
