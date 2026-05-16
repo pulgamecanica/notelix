@@ -24,6 +24,24 @@ docker volume rm notelix-prod_meili
 docker volume rm notelix-prod_data
 ```
 
+# rebuild Meilisearch index
+
+Run this after restoring or migrating Postgres without the matching Meilisearch
+volume. It clears and rebuilds the search index, so run it during a quiet period
+or briefly pause writes:
+
+```
+docker-compose -f docker-compose.prod.yml --env-file .env.prod -p notelix-prod exec backend npm run meili:reindex
+```
+
+The normal server reindex skips annotations for client-side encrypted users,
+because the server only has encrypted text for those records. Rebuild those from
+the agent container instead:
+
+```
+docker-compose -f docker-compose.agent.yml --env-file .env.agent -p notelix-agent exec backend npm run meili:reindex
+```
+
 # start dev
 
 ```
