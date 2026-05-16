@@ -13,6 +13,23 @@ DB_PASSWORD=123456
 docker network create notelix
 ```
 
+# published Docker images
+
+GitHub Actions publishes backend images to GHCR:
+
+```
+ghcr.io/notelix/notelix:prod
+ghcr.io/notelix/notelix:agent
+```
+
+The compose files still default to local images. To run with a published image,
+set the image override when starting the stack:
+
+```
+NOTELIX_BACKEND_IMAGE=ghcr.io/notelix/notelix:prod docker-compose -f docker-compose.prod.yml --env-file .env.prod -p notelix-prod up -d
+NOTELIX_AGENT_IMAGE=ghcr.io/notelix/notelix:agent docker-compose -f docker-compose.agent.yml --env-file .env.agent -p notelix-agent up -d
+```
+
 # start prod
 
 ```

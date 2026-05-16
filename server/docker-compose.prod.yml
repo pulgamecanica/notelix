@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   backend:
-    image: notelix:prod
+    image: ${NOTELIX_BACKEND_IMAGE:-notelix:prod}
     restart: always
     ports:
       - "18555:3000"
