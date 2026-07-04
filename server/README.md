@@ -30,6 +30,26 @@ NOTELIX_BACKEND_IMAGE=ghcr.io/pulgamecanica/notelix:prod docker-compose -f docke
 NOTELIX_AGENT_IMAGE=ghcr.io/pulgamecanica/notelix:agent docker-compose -f docker-compose.agent.yml --env-file .env.agent -p notelix-agent up -d
 ```
 
+# deploy on Coolify
+
+The backend image hardcodes the sibling hostnames `postgres` and `meilisearch`,
+so it must run alongside those services on the same network — it cannot be
+deployed as a standalone image. Use `docker-compose.coolify.yml`, which is
+written for Coolify (no local bind mounts, no external network, config via
+environment variables):
+
+1. Create a **Docker Compose** resource and point it at
+   `server/docker-compose.coolify.yml`.
+2. Set these environment variables:
+   - `DB_PASSWORD` — shared by the backend and postgres
+   - `MEILISEARCH_API_KEY` — shared by the backend and meilisearch
+3. Assign a domain to the `backend` service (it listens on port `3000`).
+
+Note: postgres only applies `POSTGRES_PASSWORD` when it first initializes an
+empty volume. If you change `DB_PASSWORD` after the first deploy, either reset
+the `postgres-data` volume or set `DB_PASSWORD` back to the original value,
+otherwise you will get `password authentication failed for user "postgres"`.
+
 # start prod
 
 ```

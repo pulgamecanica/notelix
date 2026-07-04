@@ -1,0 +1,52 @@
+# Coolify deployment for the Notelix backend.
+#
+# Unlike docker-compose.prod.yml (written for a manual VPS deploy), this file:
+#   - uses the published GHCR image, no local build context
+#   - has NO bind mounts of local files (ormconfig.js is baked into the image;
+#     configuration comes from environment variables set in the Coolify UI)
+#   - uses Coolify's managed network instead of an external "notelix" network
+#   - does not publish the postgres/meilisearch ports on the host
+#
+# Required environment variables (set these in Coolify → your resource → Environment Variables):
+#   DB_PASSWORD           strong password; shared by backend + postgres
+#   MEILISEARCH_API_KEY   Meilisearch master key; shared by backend + meilisearch
+#
+# The backend hardcodes the hostnames "postgres" and "meilisearch", so the
+# service names below must not be changed.
+
+services:
+  backend:
+    image: ${NOTELIX_BACKEND_IMAGE:-ghcr.io/pulgamecanica/notelix:prod}
+    restart: always
+    # Coolify generates a public URL for this service and injects it here.
+    # The backend listens on port 3000 inside the container.
+    environment:
+      - SERVICE_FQDN_BACKEND_3000
+      - DB_PASSWORD=${DB_PASSWORD}
+      - MEILISEARCH_API_KEY=${MEILISEARCH_API_KEY}
+    expose:
+      - "3000"
+    depends_on:
+      - postgres
+      - meilisearch
+
+  postgres:
+    image: "postgres:14"
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  meilisearch:
+    image: "getmeili/meilisearch:v0.25.2"
+    restart: always
+    environment:
+      - MEILI_MASTER_KEY=${MEILISEARCH_API_KEY}
+      - MEILI_NO_ANALYTICS=true
+    volumes:
+      - meili:/data.ms
+
+volumes:
+  postgres-data:
+  meili:
